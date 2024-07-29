@@ -1,0 +1,2 @@
+# Pokemon Type Optimizer
+This program will identify an optimal team of 6 pokemon based solely on type matchups. Each unique type combination that a an existing pokemon has will be considered a single matchup. The primary metric that is used to measure the team is the number of "safe super effectvie stabs". If a pokemon in the team of six has a super effective move that has same type attack bonus and the opposing pokemon does not have the same, this is a "safe super effective stab".
