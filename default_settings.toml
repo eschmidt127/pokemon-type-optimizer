@@ -1,0 +1,60 @@
+# adds additional copies of pokemon
+# accounting for abilities that affect type effectiveness
+assess_abilities = true
+assess_hidden_abilities = false
+
+# exclude mega evolutions in teams and in what the teams are assessed against
+exclude_mega_evolutions = true
+
+# excludes pokemon with stat totals less than this from teams
+# will still be included in what teams are assessed against
+# can be overwritten with command line param 
+stat_exclude = 450
+
+# Currently, weakness and strength magnitude is not tracked
+# EX: it would be a neutral matchup if there is a 4x weakness one side, and a 2x on the other
+# there is also the problem of not handling non-stab moves that may have 4X coverage
+# by default remove from team as you really can't be certain what something with 4x weakness covers
+exclude_4x_weak_from_team = true
+
+# only evaluates the best this many type combinations
+# "best" generally means it has more good matchups than bad ones
+# will evaluate 1-2 more if there is a tie for "best" metric
+# can be overwritten with command line param 
+# runtime increases exponentially as this increases
+# with ~modern ryzen 2700x processor
+# 40: ~2 minutes to run
+# 50: ~6 minutes to run
+# 60: ~24 minutes to run
+rank_types_exclude = 50
+
+# include or exclude certain pokemon from your team
+# excluded pokemon will still be assessed as a matchup your team will face
+# included pokemon should be a unique name, else only the first match found will be used 
+# enter comma separated, newlines optional
+# Ex
+# include_in_team_names = [
+# 69,
+# 420,
+# ]
+exclude_from_team_nums = [
+]
+
+# enter comma separated, enclosed in "", newlines optional
+# Ex
+# include_in_team_names = [
+# "charizard",
+# "pikachu",
+# ]
+
+exclude_from_team_names = [
+
+]
+include_in_team_names = [
+#"Chi-Yu",
+#"Groudon",
+#"Ogerpon - Cornerstone Mask",
+#"Tapu Fini",
+#"Thundurus - Therian Forme - Volt Absorb",
+#"Zamazenta - Crowned Shield",
+]
