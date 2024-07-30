@@ -31,11 +31,33 @@ Copy the default_settings.toml to settings.toml and change things there if you w
 - include or exclude more pokemon from your team based on total base stats
 - include or exclude more pokemon from your team based on how many good matchups they have.
 
-## data files
+## Data Files
 ### pokedex.csv
 The list of pokemon that exist
 ```csv
 name, national dex number, type 1, type 2, base stat total, ability 1, ability 2, hidden ability
 ```
-### <name>_national_dex_numbers.txt
-For a region <name>, the list of national pokedex numbers to include in that regional pokedex.
+### [name]_national_dex_numbers.txt
+For a region [name], the list of national pokedex numbers to include in that regional pokedex.
+
+## Team Assessment Metric Details
+The following metrics are used to rank the pokemon teams, with the next metric only used to break ties for all previous metrics.
+- Number of "safe super effective stab" matchups
+- Number of matchups with at least a neutral matchup in addition to the "safe super effective stab" one, avoids wipes.
+- number of matchups with 2 pokemon with favorable matchups
+- number of matchups with 2 pokemon with "safe super effective stab" matchups
+- number of matchupes with 2 or more neutral or better matchups
+- sum of type scores across team
+
+### Type Scores
+A pokemon's type score is the sum of all the values given to each matchup possible.
+
+Each matchup is given a value:
+- defensively weak offensively neutral matchup is worth -3
+- defensively weak offensively strong matchup is worth 0
+- defensively neutral offensively weak matchup is worth -1
+- defensively neutral offensively neutral matchup is worth 0
+- defensively neutral offensively strong matchup is worth 3
+- defensively strong offensively weak matchup is worth 0
+- defensively strong offensively neutral matchup is worth 1
+- defensively strong offensively strong matchup is worth 4
