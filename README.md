@@ -7,6 +7,7 @@ Considerations:
 - Mega evolutions are not included in assesments by default. If this is overriden, they are accounted for as if they are separate pokemon. 
 - Terastallization is not accounted for.
 - In order to make runtime of the program reasonable, only the top 50 pokemon types are assessed as part of the team by default.
+- non-STAB moves are not accounted for, nor is move power.
 
 
 ## Requirements
