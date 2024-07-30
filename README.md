@@ -9,7 +9,50 @@ Considerations:
 - In order to make runtime of the program reasonable, only the top 50 pokemon types are assessed as part of the team by default.
 - non-STAB moves are not accounted for, nor is move power.
 
+## Example Output / Just Tell Me the Best Teams 
+Read more sections to know more about what the numbers actually mean.
 
+National dex
+```text
+194 194 158 135 192 425
+        Chi-Yu  type score:50   base stats:570  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom Incineroar
+        Groudon type score:57   base stats:670  GROUND NONE
+                Alternate choices of same type with lower stats: Donphan Hippowdon Mudsdale Sandaconda Sandslash
+        Ogerpon - Cornerstone Mask      type score:36   base stats:550  GRASS ROCK
+                Alternate choices of same type with lower stats: Cradily
+        Tapu Fini       type score:89   base stats:570  WATER FAIRY
+                Alternate choices of same type with lower stats: Primarina
+        Thundurus - Therian Forme - Volt Absorb type score:107  base stats:580  ELECTRIC FLYING
+                Ability effect: ELECTRIC Immune
+        Zamazenta - Crowned Shield      type score:86   base stats:700  FIGHTING STEEL
+                Alternate choices of same type with lower stats: Cobalion Lucario
+```
+Paldea Dex (with all DLC)
+```text
+162 162 126 108 161 322
+        Chi-Yu  type score:28   base stats:570  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom Incineroar
+        Corviknight     type score:99   base stats:495  FLYING STEEL
+                Alternate choices of same type with lower stats: Skarmory
+        Gallade type score:57   base stats:518  PSYCHIC FIGHTING
+        Hippowdon       type score:48   base stats:525  GROUND NONE
+                Alternate choices of same type with lower stats: Donphan Mudsdale Sandaconda Sandslash
+        Ogerpon - Cornerstone Mask      type score:27   base stats:550  GRASS ROCK
+        Primarina       type score:63   base stats:530  WATER FAIRY
+```
+Hypothetical dex (all possible type combinations, abilities included only for pokemon that do already exist)
+```text
+204 204 168 145 202 477
+        DARK FIRE       type score:54   base stats:450  DARK FIRE
+        ELECTRIC FLYING ability: ELECTRIC_Immune        type score:101  base stats:450  ELECTRIC FLYING
+                Ability effect: ELECTRIC Immune
+        FAIRY WATER     type score:105  base stats:450  FAIRY WATER
+                Alternate choices of same type with lower stats: WATER FAIRY ability: FIRE_Resist ICE_Resist
+        GROUND NONE     type score:66   base stats:450  GROUND NONE
+        ROCK GRASS      type score:44   base stats:450  ROCK GRASS
+        STEEL FIGHTING  type score:107  base stats:450  STEEL FIGHTING
+```
 ## Requirements
 Python 3.12 with standard libraries
 
