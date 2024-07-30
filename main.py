@@ -28,8 +28,8 @@ if os.path.isfile(settings_path):
     config_data.update(custom_config_data)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("input_dex", default="national", const="", nargs='?',
-                    help="the dex to create teams from")
+parser.add_argument("input_dex", default=["national"], nargs='*',
+                    help="the pokedex(es) to create teams from")
 parser.add_argument("--stat_exclude", default=config_data["stat_exclude"],
                     const=0, nargs='?', type=int,
                     help="exclude pokemon with total base stat value below this number")
@@ -38,13 +38,16 @@ parser.add_argument("--rank_types_exclude", default=config_data["rank_types_excl
                     help="only evaluate the best this many types")
 parser.add_argument("--rank_types", action='store_true', help="just rank types/pokemon")
 
+selected_regions = []
 args = parser.parse_args()
-while args.input_dex not in region_choices:
-    input_dex = input(f"input region from {region_choices}: ")
-    if input_dex not in region_choices:
-        print("incorrect input")
-    else:
-        args.input_dex = input_dex
+if not isinstance(args.input_dex, list):
+    args.input_dex = [args.input_dex]
+for region_input in args.input_dex:
+    while region_input not in region_choices:
+        region_input = input(f"{region_input} is invalid, input region from {region_choices}: ")
+        if region_input not in region_choices:
+            print("incorrect input")
+    selected_regions.append(region_input)
 
 dex = set()  # shortlist of pokemon to put in teams and analyze
 
@@ -52,7 +55,7 @@ exclude_regional_names = ['Alola', 'Galar', 'Husui', 'Paldea', 'Blaze Breed',
                           'Combat Breed', 'Aqua Breed']
 include_regional_names = []
 
-if args.input_dex == 'national':
+if args.input_dex == ['national']:
     print('Calculating best teams for full national dex')
     if config_data["exclude_mega_evolutions"]:
         exclude_name_parts = ["Mega ", "Ultra "]
@@ -64,7 +67,7 @@ if args.input_dex == 'national':
         for exclude_name_part in exclude_name_parts:
             if exclude_name_part.lower() in poke.name.lower():
                 dex.remove(poke)
-elif args.input_dex == 'hypothetical':
+elif args.input_dex == ['hypothetical']:
     print('Calculating best teams assuming all types are possible, ' +
           'and existing type and ability combinations are possible')
     temp_types = alltypes.copy()
@@ -93,35 +96,51 @@ else:
         print("excluding mega evolutions from analysis")
     else:
         exclude_name_parts = []
-    if 'alola' in args.input_dex:
-        exclude_regional_names.remove('Alola')
-        include_regional_names.append('Alola')
-    if 'galar' in args.input_dex:
-        exclude_regional_names.remove('Galar')
-        include_regional_names.append('Galar')
-    if 'husui' in args.input_dex:
-        exclude_regional_names.remove('Husui')
-        include_regional_names.append('Husui')
-    if 'paldea' in args.input_dex:
-        exclude_regional_names.remove('Paldea')
-        exclude_regional_names.remove('Blaze Breed')
-        exclude_regional_names.remove('Combat Breed')
-        exclude_regional_names.remove('Aqua Breed')
-        include_regional_names.append('Paldea')
-        include_regional_names.append('Blaze Breed')
-        include_regional_names.append('Combat Breed')
-        include_regional_names.append('Aqua Breed')
+    for selected_region in selected_regions:
+        if 'alola' in selected_region:
+            if 'alola' in exclude_regional_names:
+                exclude_regional_names.remove('Alola')
+            if 'alola' not in include_regional_names:
+                include_regional_names.append('Alola')
+        if 'galar' in selected_region:
+            if 'Galar' in exclude_regional_names:
+                exclude_regional_names.remove('Galar')
+            if 'Galar' not in include_regional_names:
+                include_regional_names.append('Galar')
+        if 'husui' in selected_region:
+            if 'Husui' in exclude_regional_names:
+                exclude_regional_names.remove('Husui')
+            if 'Husui' not in include_regional_names:
+                include_regional_names.append('Husui')
+        if 'paldea' in selected_region:
+            if 'Paldea' in exclude_regional_names:
+                exclude_regional_names.remove('Paldea')
+            if 'Blaze Breed' in exclude_regional_names:
+                exclude_regional_names.remove('Blaze Breed')
+            if 'Combat Breed' in exclude_regional_names:
+                exclude_regional_names.remove('Combat Breed')
+            if 'Aqua Breed' in exclude_regional_names:
+                exclude_regional_names.remove('Aqua Breed')
+            if 'Paldea' not in include_regional_names:
+                include_regional_names.append('Paldea')
+            if 'Blaze Breed' not in include_regional_names:
+                include_regional_names.append('Blaze Breed')
+            if 'Combat Breed' not in include_regional_names:
+                include_regional_names.append('Combat Breed')
+            if 'Aqua Breed' not in include_regional_names:
+                include_regional_names.append('Aqua Breed')
     exclude_name_parts = exclude_name_parts + exclude_regional_names
     regional_nums = set()
     for poke in full_dex:
-        if poke.number in region_nums[args.input_dex]:
-            dex.add(poke)
-            for exclude_name_part in exclude_name_parts:
-                if exclude_name_part.lower() in poke.name.lower():
-                    dex.remove(poke)
-            for include_name_part in include_regional_names:
-                if include_name_part.lower() in poke.name.lower():
-                    regional_nums.add(poke.number)
+        for selected_region in selected_regions:
+            if poke.number in region_nums[selected_region]:
+                dex.add(poke)
+                for exclude_name_part in exclude_name_parts:
+                    if exclude_name_part.lower() in poke.name.lower():
+                        dex.remove(poke)
+                for include_name_part in include_regional_names:
+                    if include_name_part.lower() in poke.name.lower():
+                        regional_nums.add(poke.number)
     for poke in dex.copy():
         if poke.number in regional_nums:
             dex.remove(poke)
@@ -523,9 +542,9 @@ for ascore in sorted(GOOD_TEAMS.keys()):
 stop = timeit.default_timer()
 print("Runtime: ", stop - start)
 
-print("verify team by inputting a pokemon and seeing how each team member matches up")
 ateam = GOOD_TEAMS[TOP_SCORE]
 while False:
+    print("verify team by inputting a pokemon and seeing how each team member matches up")
     in_name = input("Enter pokemon name, or q to quit: ")
     if in_name == "q":
         break

@@ -17,12 +17,12 @@ If you would like to re-run the web scraper used to collect pokemon data (there 
 
 ## Usage
 ```bash
-python main.py [-h] [--stat_exclude [STAT_EXCLUDE]] [--rank_types_exclude [RANK_TYPES_EXCLUDE]] [--rank_types] [input_dex]
+python main.py [-h] [--stat_exclude [STAT_EXCLUDE]] [--rank_types_exclude [RANK_TYPES_EXCLUDE]] [--rank_types] [input_dex] [input_dex2] ...
 ```
 - STAT_EXCLUDE: pokemon with total base stats less than this number will be considered as matchups, but not considered for inclusion in the team. Default: 450
 - RANK_TYPES_EXCLUDE: The top this many pokemon based on how many good matchups they have will be considered with inclusion in the team. Default: 50
 - --rank_types: If used, shows the ranking of types that will be used for RANK_TYPES_EXCLUDE without calculating teams.
-- input_dex: The pokedex used. This will align with the name of the datafile in the datafolder, or national to include the entire pokedex. Default: national
+- input_dex: The pokedex used. This will align with the name of the datafile in the datafolder, or national to include the entire pokedex. pass multiple to combine multiple inputs. Special cases: national (all), hypothetical (assess all type combinations even if no pokemon exists with that type), cant combine special cases with other pokedexes. Default: national 
 
 ## Settings
 Copy the default_settings.toml to settings.toml and change things there if you would like to change settings.
