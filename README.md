@@ -12,7 +12,7 @@ Considerations:
 ## Requirements
 Python 3.12 with standard libraries
 
-If you would like to re-run the web scraper (there should really not be a reason to do this unless you forked and made changes), you will need the selenium and webdriver manager python packages as well as chrome.
+If you would like to re-run the web scraper used to collect pokemon data (there should really not be a reason to do this unless you forked and made changes), you will need the selenium and webdriver manager python packages as well as chrome.
 
 ## Usage
 ```bash
