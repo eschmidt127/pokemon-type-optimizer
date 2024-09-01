@@ -156,25 +156,13 @@ dual_types = {}
 
 dex, dual_types = score_dex(dex, dual_types)
 
-# print the best types
-if args.rank_types:
-    typescore_by_typekey = {}
-    for poke in dex:
-        typescore_by_typekey[poke.typekey] = dual_types[poke.typekey].score
-    sorted_typescore_by_typekey = sorted(typescore_by_typekey.items(), key=lambda x: x[1])
-    for entry in sorted_typescore_by_typekey:
-        for atype in entry[0]:
-            print(atype, end=" ")
-        print(f"- Average matchup: {entry[1]/len(dual_types)}")
-    print("matchup values:")
-    print("\tsuper effective stab move on opponent, resist all opponent stab moves: 4")
-    print("\tsuper effective stab move on opponent, opponent has regularly effective stab move: 3")
-    print("\tregularly effective stab move on opponent, resist all opponent stab moves: 1")
-    print("\topponent resists all stab moves, opponent has regularly effective stab move: -1")
-    print("\tregularly effective stab move on opponent, opponent has super effective stab move: -3")
-    print("\topponent resists all stab moves, opponent has super effective stab move: -4")
-    print("\tneutral matchup: 0")
-    exit()
+# when using hypothetical dex, pokemmon abilities are assessed,
+# but then removed from typekeys if they do provide a benefit
+# this ends up making duplicate typekeys, that we should remove.
+if args.input_dex == ['hypothetical']:
+    for poke in dex.copy():
+        if "ability:" in poke.name and len(poke.typekey) < 3:
+            dex.remove(poke)
 
 print(f"there are {len(dex)} pokemon initially being evaluated for inclusion in team")
 
@@ -264,6 +252,29 @@ if config_data["exclude_4x_weak_from_team"]:
 print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having 4x weaknesses")
 print("\t\tthis is controlled by exclude_4x_weak_from_team setting/parameter")
 
+# print the best types
+if args.rank_types:
+    print(f"there are {str(len(dex))} type combinations/pokemon left out of {str(len(dual_types))}")
+    typescore_by_typekey = {}
+    for poke in dex:
+        typescore_by_typekey[poke.typekey] = dual_types[poke.typekey].score
+    sorted_typescore_by_typekey = sorted(typescore_by_typekey.items(), key=lambda x: x[1], reverse=True)
+    print("Type  | Average Matchup Score")
+    print("----- | -----")
+    for entry in sorted_typescore_by_typekey:
+        for atype in entry[0]:
+            print(atype, end=" ")
+        print(f" | {entry[1]/len(dual_types)}")
+    print("matchup values:")
+    print("\tsuper effective stab move on opponent, resist all opponent stab moves: 4")
+    print("\tsuper effective stab move on opponent, opponent has regularly effective stab move: 3")
+    print("\tregularly effective stab move on opponent, resist all opponent stab moves: 1")
+    print("\topponent resists all stab moves, opponent has regularly effective stab move: -1")
+    print("\tregularly effective stab move on opponent, opponent has super effective stab move: -3")
+    print("\topponent resists all stab moves, opponent has super effective stab move: -4")
+    print("\tneutral matchup: 0")
+    exit()
+
 NUM_REMOVED = 0
 for duo in combinations(dex.copy(), 2):
     pokes = []
@@ -309,7 +320,6 @@ if (args.rank_types_exclude != 0) and (len(dex) > args.rank_types_exclude):
     print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having" +
           " too many more bad matchups than good ones")
     print("\t\tthis is controlled by rank_types_exclude setting/parameter")
-
 
 print(f"there are {str(len(dex))} type combinations/pokemon left out of {str(len(dual_types))}")
 
@@ -514,7 +524,7 @@ def score(in_dex, in_ssestabs, in_team, team_size):
             print(f"{round(100*PROG/num_combinations, 2):.2f}% of the way" +
                   f"done, current max ssestabs: {MAX_SSESTABS}, time elapsed: " +
                   f"{round(elapsed_time)}, est. time remaining: " +
-                  f"{round(estimated_time_left)}\t\t\r", end='')
+                  f"{round(estimated_time_left)}         \r", end='')
 
 
 start_ssestabs = set()
