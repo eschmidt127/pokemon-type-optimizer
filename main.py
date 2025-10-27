@@ -521,7 +521,7 @@ def score(in_dex, in_ssestabs, in_team, team_size):
             # if PROG % A_PERC == 0 and PROG > 0:
             elapsed_time = timeit.default_timer() - start
             estimated_time_left = ((elapsed_time/(PROG/num_combinations)) - elapsed_time)
-            print(f"{round(100*PROG/num_combinations, 2):.2f}% of the way" +
+            print(f"{round(100*PROG/num_combinations, 2):.2f}% of the way " +
                   f"done, current max ssestabs: {MAX_SSESTABS}, time elapsed: " +
                   f"{round(elapsed_time)}, est. time remaining: " +
                   f"{round(estimated_time_left)}         \r", end='')

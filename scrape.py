@@ -12,7 +12,8 @@ options = Options()
 options.headless = True
 options.add_argument("--log-level=3")
 options.add_argument("--window-size=1920,1080")
-driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+# driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
+driver = webdriver.Chrome(options=options)
 
 
 def get_variation_data(panel, name, region_nums, region_dexnames):
@@ -118,6 +119,7 @@ REGION_NUMS = {"gen1_kanto": set(),
                "gen9_paldea": set(),
                "gen9_paldea2": set(),
                "gen9_paldea3": set(),
+               "gen9_kalos": set(),
                }
 REGION_DEXNAMES = {"Red/Blue/Yellow": "gen1_kanto",
                    "Yellow/Red/Blue": "gen1_kanto",
@@ -145,6 +147,7 @@ REGION_DEXNAMES = {"Red/Blue/Yellow": "gen1_kanto",
                    "Scarlet/Violet": "gen9_paldea",
                    "The Teal Mask": "gen9_paldea2",
                    "The Indigo Disk": "gen9_paldea3",
+                   "Legends: Z-A": "gen9_kalos",
                    }
 data_path = os.path.join(os.path.dirname(__file__), "data")
 if not os.path.isdir(data_path):
