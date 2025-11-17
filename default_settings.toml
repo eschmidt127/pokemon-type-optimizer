@@ -4,7 +4,7 @@ assess_abilities = true
 assess_hidden_abilities = false
 
 # exclude mega evolutions in teams and in what the teams are assessed against
-exclude_mega_evolutions = true
+exclude_mega_evolutions = false
 
 # excludes pokemon with stat totals less than this from teams
 # will still be included in what teams are assessed against

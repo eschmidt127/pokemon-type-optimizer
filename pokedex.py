@@ -205,6 +205,10 @@ def score_dex(dex, dual_types):
     remove_from_dual_types = set()
     for poke in dex.copy():
         if len(poke.typekey) > 2:
+            if ("Ultra " in poke.name or "Mega " not in poke.name):
+                mega = True
+            else:
+                mega = False
             typekey_no_ability = frozenset({poke.type1, poke.type2})
             ability_type_effectiveness = [dual_types[poke.typekey].oe,
                                           dual_types[poke.typekey].one,
@@ -220,12 +224,18 @@ def score_dex(dex, dual_types):
                                        dual_types[typekey_no_ability].dse]
             if ability_type_effectiveness == base_type_effectiveness:
                 remove_from_dual_types.add(poke.typekey.copy())
-                # remove it if this pokemon has two mutliple abilities, and this version was a copy
-                # added due to the ability that had no positive effect
+                # if the ability had no effect, see if there is another version of the pokemon in the dex
+                # this will be the case for pokemon with multiple possible abilities.
+                # If there is another version, delete this extra one added for an ability with no real impact
+                # care to handle mega evolutions
                 removed = False
                 for inner_poke in dex.copy():
                     if (poke.number == inner_poke.number and
                             inner_poke.typekey == typekey_no_ability):
+                        if (mega and "Ultra " not in poke.name and "Mega " not in poke.name):
+                            continue
+                        if (not mega and ("Ultra " in poke.name or "Mega " in poke.name)):
+                            continue
                         dex.remove(poke)
                         removed = True
                 # if this pokemon's only ability had no effect, revert the typekey to not have the
