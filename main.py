@@ -1,11 +1,11 @@
 """Calculates pokemon teams based on maximizing advantageous type matchup possibilities"""
 import os
 import copy
-from itertools import combinations
 from math import comb
 import argparse
 import timeit
 import tomllib
+import re
 from dataclasses import dataclass
 from pokedex import Pokemon, full_dex, region_nums, types, alltypes, score_dex
 
@@ -147,7 +147,52 @@ else:
         for include_name_part in include_regional_names:
             if include_name_part.lower() in poke.name.lower():
                 dex.add(poke)
-    print("excluding regional forms not in region from analysis")
+    print("excluded regional forms not in region from analysis")
+    highest_gen = 0
+    for selected_region in selected_regions:
+        gen_regex = re.compile(r"(gen)(\d+)(_)(.+)")
+        match = re.match(gen_regex, selected_region)
+        gen = int(match.group(2))
+        if gen > highest_gen:
+            highest_gen = gen
+    # using some custom dex? Assuming 6+ and leaving fairy, steel, dark types alone.
+    if highest_gen == 0:
+        highest_gen = 6
+    # fairy type addition, some 1st type normal changed to fairy. Some fairy 2nd types added
+    if gen < 6:
+        for poke in dex.copy():
+            replace = False
+            if poke.type1 == "FAIRY":
+                replace = True
+                type1 = "NORMAL"
+            else:
+                type1 = poke.type1
+            if poke.type2 == "FAIRY":
+                replace = True
+                type2 = "NONE"
+            else:
+                type2 = poke.type2
+            if replace:
+                dex.remove(poke)
+                dex.add(Pokemon(poke.name, number=poke.number, type1=type1, type2=type2,
+                                tbstat=poke.tbstat, ability1=poke.ability1, ability2=poke.ability2,
+                                abilityh=poke.abilityh))
+    # Steel type addition, just magnemite and magneton. Secondary steel needs to be removed in gen1
+    # Note: Dark did not get added to any gen1 pokemon.
+    if gen == 1:
+        for poke in dex.copy():
+            replace = False
+            if poke.type2 == "STEEL":
+                replace = True
+                type2 = "NONE"
+            else:
+                type2 = poke.type2
+            if replace:
+                dex.remove(poke)
+                dex.add(Pokemon(poke.name, number=poke.number, type1=poke.type1, type2=type2,
+                                tbstat=poke.tbstat, ability1=poke.ability1, ability2=poke.ability2,
+                                abilityh=poke.abilityh))
+
 
 # dictionary of type combinations to their Type class variable,
 # key is frozen set of types as strings (ex. "FIRE")
@@ -187,8 +232,8 @@ for poke in dex.copy():
         NUM_REMOVED += 1
     else:
         for exlude_name in exclude_names:
-            if exlude_name.lower() in poke.name.lower():
-                dex.remove(poke.name)
+            if exlude_name.lower() in poke.name.lower() and poke in dex:
+                dex.remove(poke)
                 NUM_REMOVED += 1
 print(f"\t{NUM_REMOVED} type combinations/pokemon removed for being in " +
       "exclude_from_team_names or exclude_from_team_nums")
@@ -275,37 +320,41 @@ if args.rank_types:
     print("\tneutral matchup: 0")
     exit()
 
-NUM_REMOVED = 0
-for duo in combinations(dex.copy(), 2):
-    pokes = []
-    for poke in duo:
-        pokes.append(poke)
-    # don't let abilities effect this.
-    if len(pokes[0].typekey) + len(pokes[1].typekey) > 4:
-        continue
-    ssestabs0 = dual_types[pokes[0].typekey].ssestabs
-    ssestabs1 = dual_types[pokes[1].typekey].ssestabs
-    restabs0 = dual_types[pokes[0].typekey].restabs
-    restabs1 = dual_types[pokes[1].typekey].restabs
-    fmatchups0 = ssestabs0.union(restabs0)
-    fmatchups1 = ssestabs1.union(restabs1)
-    if ssestabs0 == ssestabs1:
-        if restabs0.issubset(restabs1):
-            dex.discard(pokes[0])
-            NUM_REMOVED += 1
-        elif restabs1.issubset(restabs0):
-            dex.discard(pokes[1])
-            NUM_REMOVED += 1
-    elif ssestabs0.issubset(ssestabs1):
-        if fmatchups0.issubset(fmatchups1):
-            dex.discard(pokes[0])
-            NUM_REMOVED += 1
-    elif ssestabs1.issubset(ssestabs0):
-        if fmatchups1.issubset(fmatchups0):
-            dex.discard(pokes[1])
-            NUM_REMOVED += 1
-print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having" +
-      " alternatives that cover everything they do and more")
+# fix me? This is bugged when mega evolutions are included at the least.
+# was originally for saving runtime, but more steps have been taken since then
+# runtime is less of a concern
+#
+# NUM_REMOVED = 0
+# for duo in combinations(dex.copy(), 2):
+#     pokes = []
+#     for poke in duo:
+#         pokes.append(poke)
+#     # don't let abilities effect this.
+#     if len(pokes[0].typekey) + len(pokes[1].typekey) > 4:
+#         continue
+#     ssestabs0 = dual_types[pokes[0].typekey].ssestabs
+#     ssestabs1 = dual_types[pokes[1].typekey].ssestabs
+#     restabs0 = dual_types[pokes[0].typekey].restabs
+#     restabs1 = dual_types[pokes[1].typekey].restabs
+#     fmatchups0 = ssestabs0.union(restabs0)
+#     fmatchups1 = ssestabs1.union(restabs1)
+#     if ssestabs0 == ssestabs1:
+#         if restabs0.issubset(restabs1):
+#             dex.discard(pokes[0])
+#             NUM_REMOVED += 1
+#         elif restabs1.issubset(restabs0):
+#             dex.discard(pokes[1])
+#             NUM_REMOVED += 1
+#     elif ssestabs0.issubset(ssestabs1):
+#         if fmatchups0.issubset(fmatchups1):
+#             dex.discard(pokes[0])
+#             NUM_REMOVED += 1
+#     elif ssestabs1.issubset(ssestabs0):
+#         if fmatchups1.issubset(fmatchups0):
+#             dex.discard(pokes[1])
+#             NUM_REMOVED += 1
+# print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having" +
+#       " alternatives that cover everything they do and more")
 
 if (args.rank_types_exclude != 0) and (len(dex) > args.rank_types_exclude):
     typescores = []

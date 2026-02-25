@@ -4,7 +4,7 @@ assess_abilities = true
 assess_hidden_abilities = false
 
 # exclude mega evolutions in teams and in what the teams are assessed against
-exclude_mega_evolutions = false
+exclude_mega_evolutions = true
 
 # excludes pokemon with stat totals less than this from teams
 # will still be included in what teams are assessed against
@@ -52,9 +52,7 @@ exclude_from_team_names = [
 ]
 include_in_team_names = [
 #"Chi-Yu",
-#"Groudon",
 #"Ogerpon - Cornerstone Mask",
-#"Tapu Fini",
 #"Thundurus - Therian Forme - Volt Absorb",
 #"Zamazenta - Crowned Shield",
 ]
