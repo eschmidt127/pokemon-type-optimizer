@@ -63,6 +63,7 @@ class Pokemon:
     type2: str
     typekey: frozenset = field(init=False)
     tbstat: int  # total base stats
+    tbstat_adjst: int  # total base stats minus the lesser of attack or special attack
     ability1: str
     ability2: str
     abilityh: str
@@ -83,7 +84,7 @@ def add_ability(name, in_dex, include_hidden, effect1, effect2=""):
         make_new = ((poke.ability1 == name and poke.ability2 != "") or
                     (poke.ability2 == name) or
                     (include_hidden and poke.abilityh == name) or
-                    (include_hidden and poke.ability1 == name and poke.abilityh != ""))
+                    (include_hidden and poke.ability1 == name and poke.ability2 != "" and poke.abilityh != ""))
         if make_new:
             new_ability_poke = copy.deepcopy(poke)
             new_ability_poke.name = poke.name + " - " + name
@@ -185,11 +186,11 @@ def score_dex(dex, dual_types):
                     ability_effect = ability_split[1]
                     if ability_effect == "Resist":
                         if ability_type in dse:
-                            dse.difference_update(ability_type)
+                            dse.discard(ability_type)
                         else:
                             dne.add(ability_type)
                     if ability_effect == "Immune":
-                        dse.difference_update(ability_type)
+                        dse.discard(ability_type)
                         dne.add(ability_type)
                     if ability_effect == "Stab":
                         one.difference_update(types[ability_type].ose)
@@ -210,6 +211,8 @@ def score_dex(dex, dual_types):
             else:
                 mega = False
             typekey_no_ability = frozenset({poke.type1, poke.type2})
+            if typekey_no_ability not in dual_types:
+                continue
             ability_type_effectiveness = [dual_types[poke.typekey].oe,
                                           dual_types[poke.typekey].one,
                                           dual_types[poke.typekey].ose,
@@ -300,18 +303,18 @@ def score_dex(dex, dual_types):
                                     dtype2 in ptype.dse):
                                 continue
                             if ability_type in ptype.d_dse:
-                                ptype.d_dse.difference_update(ability_type)
+                                ptype.d_dse.discard(ability_type)
                             else:
                                 ptype.d_dne.add(ability_type)
                         elif ability_effect == "Immune":
-                            ptype.d_dse.difference_update(ability_type)
+                            ptype.d_dse.discard(ability_type)
                             ptype.d_dne.add(ability_type)
                         elif ability_effect == "Stab":
                             if ability_type in dtype.dse:
-                                ptype.d_one.difference_update(dtypekey)
+                                ptype.d_one.discard(dtypekey)
                                 ptype.d_ose.add(dtypekey)
                             elif ability_type in dtype.de:
-                                ptype.d_one.difference_update(dtypekey)
+                                ptype.d_one.discard(dtypekey)
     for poke in dex:
         dual_types[poke.typekey].d_oe = (dual_types.keys() - dual_types[poke.typekey].d_ose
                                          - dual_types[poke.typekey].d_one)
@@ -406,7 +409,7 @@ with open(os.path.join(data_path, "pokedex.csv"), "r", encoding="utf-8") as f:
     for pokecsv in f:
         s = pokecsv.split(",")
         full_dex.add(Pokemon(name=s[0], number=int(s[1]), type1=s[2].upper(), type2=s[3].upper(),
-                             tbstat=int(s[4]), ability1=s[4], ability2=s[5], abilityh=s[6]))
+                             tbstat=int(s[4]), ability1=s[5], ability2=s[6], abilityh=s[7], tbstat_adjst=int(s[8])))
 region_nums = {}
 region_num_regex = re.compile("(.+)(_national_dex_numbers\\.txt)")
 for path in os.listdir(data_path):

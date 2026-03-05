@@ -5,8 +5,6 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 options = Options()
 options.headless = True
@@ -25,6 +23,9 @@ def get_variation_data(panel, name, region_nums, region_dexnames):
     ability1 = ""
     ability2 = ""
     abilityh = ""
+    attack = 0
+    spatt = 0
+    tbstat_adjusted = 0
     xpath = ".//h2[text()='Pokédex data']/following::table[@class='vitals-table']"
     pokedex_data = panel.find_element(By.XPATH, xpath)
     for line in pokedex_data.text.splitlines():
@@ -47,9 +48,27 @@ def get_variation_data(panel, name, region_nums, region_dexnames):
     for line in base_stats.text.splitlines():
         sline = line.split()
         # print(" ".join(sline))
-        if sline[0] == "Total":
+        if sline[0] == "Attack":
+            attack = int(sline[1])
+        elif sline[0] == "Sp.":
+            if sline[1] == "Atk":
+                spatt = int(sline[2])
+        elif sline[0] == "Total":
             tbstat = int(sline[1])
-    pokedata = f"{name},{int(number)},{type1},{type2},{tbstat},{ability1},{ability2},{abilityh}"
+    if tbstat == 0:
+        print("error finding total stats")
+        exit(1)
+    if attack == 0:
+        print("error finding attack stat")
+        exit(1)
+    if spatt == 0:
+        print("error finding special attack stat")
+        exit(1)
+    if attack > spatt:
+        tbstat_adjusted = tbstat - spatt
+    else:
+        tbstat_adjusted = tbstat - attack
+    pokedata = f"{name},{int(number)},{type1},{type2},{tbstat},{ability1},{ability2},{abilityh},{tbstat_adjusted}"
     print(pokedata)
     POKEDEX_FILE.write(pokedata+"\n")
     dexes = pokedex_data.text.split("Local № ", 1)[1].splitlines()
@@ -120,6 +139,7 @@ REGION_NUMS = {"gen1_kanto": set(),
                "gen9_paldea2": set(),
                "gen9_paldea3": set(),
                "gen9_kalos": set(),
+               "gen9_kalos2": set(),
                }
 REGION_DEXNAMES = {"Red/Blue/Yellow": "gen1_kanto",
                    "Yellow/Red/Blue": "gen1_kanto",
@@ -148,6 +168,7 @@ REGION_DEXNAMES = {"Red/Blue/Yellow": "gen1_kanto",
                    "The Teal Mask": "gen9_paldea2",
                    "The Indigo Disk": "gen9_paldea3",
                    "Legends: Z-A": "gen9_kalos",
+                   "Mega Dimension": "gen9_kalos2",
                    }
 data_path = os.path.join(os.path.dirname(__file__), "data")
 if not os.path.isdir(data_path):

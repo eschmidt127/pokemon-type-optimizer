@@ -12,46 +12,108 @@ Considerations:
 ## Example Output / Just Tell Me the Best Teams 
 Read more sections to know more about what the numbers actually mean.
 
-National dex
+National dex (With Mega evolutions)
 ```text
-194 194 158 135 192 425
-        Chi-Yu  type score:50   base stats:570  DARK FIRE
-                Alternate choices of same type with lower stats: Houndoom Incineroar
-        Groudon type score:57   base stats:670  GROUND NONE
-                Alternate choices of same type with lower stats: Donphan Hippowdon Mudsdale Sandaconda Sandslash
-        Ogerpon - Cornerstone Mask      type score:36   base stats:550  GRASS ROCK
-                Alternate choices of same type with lower stats: Cradily
-        Tapu Fini       type score:89   base stats:570  WATER FAIRY
-                Alternate choices of same type with lower stats: Primarina
-        Thundurus - Therian Forme - Volt Absorb type score:107  base stats:580  ELECTRIC FLYING
-                Ability effect: ELECTRIC Immune
-        Zamazenta - Crowned Shield      type score:86   base stats:700  FIGHTING STEEL
-                Alternate choices of same type with lower stats: Cobalion Lucario
+195 195 160 135 193 463
+        Clodsire - Water Absorb type score:93   ajusted base stats:385  POISON GROUND
+                Ability effect: WATER Immune
+        Mega Houndoom   type score:46   ajusted base stats:510  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom - Flash Fire(410) Incineroar(450) Houndoom(410) Chi-Yu(490)
+        Mega Mewtwo X   type score:77   ajusted base stats:626  PSYCHIC FIGHTING
+                Alternate choices of same type with lower stats: Gallade(453) Mega Gallade(553) Mega Medicham(430)
+        Mega Skarmory   type score:138  ajusted base stats:525  STEEL FLYING
+                Alternate choices of same type with lower stats: Skarmory(425) Celesteela(469) Corviknight(442)
+        Ogerpon - Cornerstone Mask      type score:29   ajusted base stats:490  GRASS ROCK
+                Alternate choices of same type with lower stats: Cradily(414)
+        Tapu Fini       type score:80   ajusted base stats:495  WATER FAIRY
+                Alternate choices of same type with lower stats: Primarina(456)
+  neutral matchup against: ELECTRIC GROUND_Immune NONE
+```
+National dex (Without Mega evolutions)
+```text
+192 192 157 132 190 451
+        Celesteela      type score:129  ajusted base stats:469  STEEL FLYING
+                Alternate choices of same type with lower stats: Corviknight(442) Skarmory(425)
+        Chi-Yu  type score:44   ajusted base stats:490  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom(410) Incineroar(450) Houndoom - Flash Fire(410)
+        Clodsire - Water Absorb type score:93   ajusted base stats:385  POISON GROUND
+                Ability effect: WATER Immune
+        Gallade type score:78   ajusted base stats:453  PSYCHIC FIGHTING
+        Ogerpon - Cornerstone Mask      type score:29   ajusted base stats:490  GRASS ROCK
+                Alternate choices of same type with lower stats: Cradily(414)
+        Tapu Fini       type score:78   ajusted base stats:495  WATER FAIRY
+                Alternate choices of same type with lower stats: Primarina(456)
+  neutral matchup against: ELECTRIC GROUND_Immune NONE
+```
+Paldea Dex (with no DLC)
+```text
+127 127 102 87 124 336
+        Chi-Yu  type score:38   ajusted base stats:490  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom - Flash Fire(410) Houndoom(410)
+        Clodsire - Water Absorb type score:72   ajusted base stats:385  POISON GROUND
+                Ability effect: WATER Immune
+        Froslass        type score:9    ajusted base stats:400  ICE GHOST
+        Scovillain      type score:44   ajusted base stats:378  GRASS FIRE
+        Tinkaton        type score:88   ajusted base stats:436  FAIRY STEEL
+                Alternate choices of same type with lower stats: Klefki(390)
+        Wash Rotom - Levitate   type score:85   ajusted base stats:455  ELECTRIC WATER
+                Ability effect: GROUND Immune
+  only defensive advantage against: NONE NORMAL
+  neutral matchup against: ELECTRIC GROUND_Immune NONE
 ```
 Paldea Dex (with all DLC)
 ```text
-162 162 126 108 161 322
-        Chi-Yu  type score:28   base stats:570  DARK FIRE
-                Alternate choices of same type with lower stats: Houndoom Incineroar
-        Corviknight     type score:99   base stats:495  FLYING STEEL
-                Alternate choices of same type with lower stats: Skarmory
-        Gallade type score:57   base stats:518  PSYCHIC FIGHTING
-        Hippowdon       type score:48   base stats:525  GROUND NONE
-                Alternate choices of same type with lower stats: Donphan Mudsdale Sandaconda Sandslash
-        Ogerpon - Cornerstone Mask      type score:27   base stats:550  GRASS ROCK
-        Primarina       type score:63   base stats:530  WATER FAIRY
+161 161 131 108 159 372
+        Chi-Yu  type score:17   ajusted base stats:490  DARK FIRE
+                Alternate choices of same type with lower stats: Incineroar(450) Houndoom(410) Houndoom - Flash Fire(410)
+        Clodsire - Water Absorb type score:94   ajusted base stats:385  POISON GROUND
+                Ability effect: WATER Immune
+        Corviknight     type score:110  ajusted base stats:442  FLYING STEEL
+                Alternate choices of same type with lower stats: Skarmory(425)
+        Gallade type score:63   ajusted base stats:453  PSYCHIC FIGHTING
+        Ogerpon - Cornerstone Mask      type score:26   ajusted base stats:490  GRASS ROCK
+        Primarina       type score:62   ajusted base stats:456  WATER FAIRY
+  neutral matchup against: ELECTRIC GROUND_Immune NONE
+```
+Legends Z-A Dex (No DLC)
+```text
+79 79 65 57 77 131
+        Heliolisk       type score:-7   ajusted base stats:426  ELECTRIC NORMAL
+        Hippowdon       type score:44   ajusted base stats:457  GROUND NONE
+        Mega Froslass   type score:2    ajusted base stats:500  ICE GHOST
+                Alternate choices of same type with lower stats: Froslass(400)
+        Mega Houndoom   type score:-2   ajusted base stats:510  DARK FIRE
+                Alternate choices of same type with lower stats: Houndoom(410)
+        Mega Mawile     type score:77   ajusted base stats:425  STEEL FAIRY
+                Alternate choices of same type with lower stats: Klefki(390)
+        Mega Mewtwo X   type score:17   ajusted base stats:626  PSYCHIC FIGHTING
+                Alternate choices of same type with lower stats: Mega Medicham(430) Mega Gallade(553) Gallade(453)
+```
+Legends Z-A Dex (with DLC)
+```text
+108 108 90 70 105 173
+        Krookodile      type score:10   ajusted base stats:454  GROUND DARK
+        Mega Altaria    type score:-4   ajusted base stats:480  DRAGON FAIRY
+        Mega Hawlucha   type score:-5   ajusted base stats:526  FIGHTING FLYING
+                Alternate choices of same type with lower stats: Mega Staraptor(525) Flamigo(425) Hawlucha(426)
+        Mega Scovillain type score:19   ajusted base stats:448  GRASS FIRE
+                Alternate choices of same type with lower stats: Scovillain(378)
+        Mega Steelix    type score:82   ajusted base stats:555  STEEL GROUND
+                Alternate choices of same type with lower stats: Steelix(455) Excadrill(458) Mega Excadrill(543)
+        Wash Rotom      type score:71   ajusted base stats:455  ELECTRIC WATER
+  neutral matchup against: ELECTRIC FLYINGG
 ```
 Hypothetical dex (all possible type combinations, abilities included only for pokemon that do already exist)
 ```text
-204 204 168 145 202 477
-        DARK FIRE       type score:54   base stats:450  DARK FIRE
-        ELECTRIC FLYING ability: ELECTRIC_Immune        type score:101  base stats:450  ELECTRIC FLYING
-                Ability effect: ELECTRIC Immune
-        FAIRY WATER     type score:105  base stats:450  FAIRY WATER
-                Alternate choices of same type with lower stats: WATER FAIRY ability: FIRE_Resist ICE_Resist
-        GROUND NONE     type score:66   base stats:450  GROUND NONE
-        ROCK GRASS      type score:44   base stats:450  ROCK GRASS
-        STEEL FIGHTING  type score:107  base stats:450  STEEL FIGHTING
+209 209 174 149 207 524
+        DARK FIRE       type score:52   ajusted base stats:375  DARK FIRE
+        FIGHTING PSYCHIC        type score:79   ajusted base stats:375  FIGHTING PSYCHIC
+        GRASS ROCK      type score:43   ajusted base stats:375  GRASS ROCK
+        POISON GROUND ability: WATER_Immune     type score:108  ajusted base stats:375  POISON GROUND
+                Ability effect: WATER Immune
+        STEEL FLYING    type score:145  ajusted base stats:375  STEEL FLYING
+        WATER FAIRY     type score:97   ajusted base stats:375  WATER FAIRY
+  neutral matchup against: ELECTRIC GROUND_Immune NONE
 ```
 ## Requirements
 Python 3.12 with standard libraries

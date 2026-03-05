@@ -33,10 +33,16 @@ parser.add_argument("input_dex", default=["national"], nargs='*',
 parser.add_argument("--stat_exclude", default=config_data["stat_exclude"],
                     const=0, nargs='?', type=int,
                     help="exclude pokemon with total base stat value below this number")
+helpmsg = "exclude pokemon with total base stat value minus the lesser of attack and special attack below this number"
+parser.add_argument("--stat_exclude_adj", default=config_data["stat_exclude_adjusted"],
+                    const=0, nargs='?', type=int, help=helpmsg)
 parser.add_argument("--rank_types_exclude", default=config_data["rank_types_exclude"],
                     const=0, nargs='?', type=int,
                     help="only evaluate the best this many types")
 parser.add_argument("--rank_types", action='store_true', help="just rank types/pokemon")
+helpmsg = "verify team by inputting a pokemon and seeing how each team member matches up. " \
+          "Does nothing if used with rank_types."
+parser.add_argument("--test", action='store_true', help=helpmsg)
 
 selected_regions = []
 args = parser.parse_args()
@@ -51,7 +57,7 @@ for region_input in args.input_dex:
 
 dex = set()  # shortlist of pokemon to put in teams and analyze
 
-exclude_regional_names = ['Alola', 'Galar', 'Husui', 'Paldea', 'Blaze Breed',
+exclude_regional_names = ['Alola', 'Galar', 'Hisui', 'Paldea', 'Blaze Breed',
                           'Combat Breed', 'Aqua Breed']
 include_regional_names = []
 
@@ -76,7 +82,8 @@ elif args.input_dex == ['hypothetical']:
         atype = temp_types.pop()
         for btype in temp_types:
             dex.add(Pokemon(name=atype+" "+btype, number=DUMMY_NUM, type1=atype, type2=btype,
-                            tbstat=args.stat_exclude, ability1="", ability2="", abilityh=""))
+                            tbstat=args.stat_exclude, ability1="", ability2="", abilityh="",
+                            tbstat_adjst=args.stat_exclude_adj))
             DUMMY_NUM += 1
     ability_poke_typekeys = set()
     for poke in full_dex:
@@ -87,6 +94,7 @@ elif args.input_dex == ['hypothetical']:
                 if len(atype.split("_")) > 1:
                     ability_poke.name = ability_poke.name + " " + atype
             ability_poke.tbstat = args.stat_exclude
+            ability_poke.tbstat_adjst = args.stat_exclude_adj
             ability_poke_typekeys.add(poke.typekey)
             dex.add(ability_poke)
 else:
@@ -109,9 +117,9 @@ else:
                 include_regional_names.append('Galar')
         if 'husui' in selected_region:
             if 'Husui' in exclude_regional_names:
-                exclude_regional_names.remove('Husui')
+                exclude_regional_names.remove('Hisui')
             if 'Husui' not in include_regional_names:
-                include_regional_names.append('Husui')
+                include_regional_names.append('Hisui')
         if 'paldea' in selected_region:
             if 'Paldea' in exclude_regional_names:
                 exclude_regional_names.remove('Paldea')
@@ -176,7 +184,7 @@ else:
                 dex.remove(poke)
                 dex.add(Pokemon(poke.name, number=poke.number, type1=type1, type2=type2,
                                 tbstat=poke.tbstat, ability1=poke.ability1, ability2=poke.ability2,
-                                abilityh=poke.abilityh))
+                                abilityh=poke.abilityh, tbstat_adjst=poke.tbstat_adjst))
     # Steel type addition, just magnemite and magneton. Secondary steel needs to be removed in gen1
     # Note: Dark did not get added to any gen1 pokemon.
     if gen == 1:
@@ -191,7 +199,7 @@ else:
                 dex.remove(poke)
                 dex.add(Pokemon(poke.name, number=poke.number, type1=poke.type1, type2=type2,
                                 tbstat=poke.tbstat, ability1=poke.ability1, ability2=poke.ability2,
-                                abilityh=poke.abilityh))
+                                abilityh=poke.abilityh, tbstat_adjst=poke.tbstat_adjst))
 
 
 # dictionary of type combinations to their Type class variable,
@@ -250,26 +258,36 @@ if args.stat_exclude != 0:
     print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having total" +
           " base stat values less than " + str(args.stat_exclude))
 
+if args.stat_exclude_adj != 0:
+    weak_poke = set()
+    for poke in dex:
+        if poke.tbstat_adjst < args.stat_exclude_adj:
+            weak_poke.add(poke)
+    for poke in weak_poke:
+        dex.remove(poke)
+        NUM_REMOVED += 1
+    print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having total" +
+          " base stat minus the lesser of attack and special attack less than " + str(args.stat_exclude_adj))
+
 # removes pokemon from dex with lower base stats than a same typed counterpart
 best_poke = set()
 covered_types = set()
-poke_choices = {}  # dictionary of typekey to arrays of pokemon names that have that type
+poke_choices = {}  # dictionary of typekey to arrays of pokemon that have that type
 for poke in dex:
     if poke.typekey not in covered_types:
         covered_types.add(poke.typekey)
         best_poke.add(poke)
-        poke_choices[poke.typekey] = [poke.name]
+        poke_choices[poke.typekey] = [poke]
     else:
         for bpoke in best_poke.copy():
             if bpoke.typekey == poke.typekey:
-                if bpoke.tbstat < poke.tbstat:
+                if bpoke.tbstat_adjst < poke.tbstat_adjst:
                     best_poke.remove(bpoke)
                     best_poke.add(poke)
-                poke_choices[poke.typekey].append(poke.name)
+                poke_choices[poke.typekey].append(poke)
 NUM_REMOVED = len(dex) - len(best_poke)
 dex = best_poke
-print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having lower" +
-      " base stat values less than a same typed counterpart")
+print(f"\t{NUM_REMOVED} type combinations/pokemon removed for having stat values less than a same typed counterpart")
 
 # remove pokemon with super (x4) weaknesses
 # Currently, weakness and strength magnitude is not tracked
@@ -443,27 +461,26 @@ def score_team(team, debug, debug2, ssestabs):
               F"{fallback_favorable_neutrals2x_c} {tscore}")
         for debug_poke in sorted(team, key=lambda x: x.name):
             print(f"\t{debug_poke.name}\ttype score:{str(dual_types[debug_poke.typekey].score)}" +
-                  f"\tbase stats:{str(debug_poke.tbstat)}\t{debug_poke.type1} {debug_poke.type2}")
+                  f"\tajusted base stats:{str(debug_poke.tbstat_adjst)}\t{debug_poke.type1} {debug_poke.type2}")
             if len(debug_poke.typekey) > 2:
                 for debug_type in debug_poke.typekey:
                     if "_" in debug_type:
                         print(f"\t\tAbility effect: {debug_type.split('_')[0]} " +
                               f"{debug_type.split('_')[1]}")
             if len(poke_choices[debug_poke.typekey]) > 1:
-                if len(poke_choices[debug_poke.typekey]) > 1:
-                    print("\t\tAlternate choices of same type with lower stats: ", end="")
-                    for poke_name in [name for name in sorted(poke_choices[debug_poke.typekey])
-                                      if name != debug_poke.name]:
-                        print(poke_name, end=" ")
-                    print(" ")
+                print("\t\tAlternate choices of same type with lower stats: ", end="")
+                for poke in poke_choices[debug_poke.typekey]:
+                    if poke.name != debug_poke.name:
+                        print(f"{poke.name}({poke.tbstat_adjst})", end=" ")
+                print(" ")
 
     if debug2:
         for debug_type in dual_types.keys()-ssestabs.union(restabs).union(neutrals):
-            print("\t\t\tbad matchup against: " + str(" ".join(sorted(debug_type))))
-        for debug_type in neutrals-ssestabs.union(restabs):
-            print("\t\t\tneutral matchup against: " + str(" ".join(sorted(debug_type))))
+            print("  bad matchup against: " + str(" ".join(sorted(debug_type))))
         for debug_type in restabs-ssestabs:
-            print("\t\t\tonly sestab against: " + str(" ".join(sorted(debug_type))))
+            print("  only defensive advantage against: " + str(" ".join(sorted(debug_type))))
+        for debug_type in neutrals-ssestabs.union(restabs):
+            print("  neutral matchup against: " + str(" ".join(sorted(debug_type))))
 
     return Score(ssestabs_c, fallback_favorable_neutrals_c, favorables2x_c, ssestabs2x_c,
                  fallback_favorable_neutrals2x_c, tscore, unique_breaker)
@@ -602,7 +619,7 @@ stop = timeit.default_timer()
 print("Runtime: ", stop - start)
 
 ateam = GOOD_TEAMS[TOP_SCORE]
-while False:
+while args.test and not args.rank_types:
     print("verify team by inputting a pokemon and seeing how each team member matches up")
     in_name = input("Enter pokemon name, or q to quit: ")
     if in_name == "q":
@@ -632,7 +649,7 @@ while False:
         print("This pokemon was not included in matchups evaluated." +
               "Is it from another region maybe?")
         continue
-    print(f"{FOUND_POKE.name}: {FOUND_POKE.type1} {FOUND_POKE.type2}")
+    print(f"{FOUND_POKE.name}: {FOUND_POKE.typekey}")
     for poke in ateam:
         print(poke.name + "\t" + poke.type1 + " " + poke.type2)
         print("\tmatchup score: " + str(dual_types[poke.typekey].matchups[indtype]))

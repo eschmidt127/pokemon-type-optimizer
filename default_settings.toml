@@ -9,7 +9,12 @@ exclude_mega_evolutions = true
 # excludes pokemon with stat totals less than this from teams
 # will still be included in what teams are assessed against
 # can be overwritten with command line param 
-stat_exclude = 450
+stat_exclude = 0
+
+# total stats minus the lesser of special attack and attack
+# since likely you will prioritize moves for your higher stat
+# Default is an average stat of 75 for the remaining stats
+stat_exclude_adjusted = 375
 
 # Currently, weakness and strength magnitude is not tracked
 # EX: it would be a neutral matchup if there is a 4x weakness one side, and a 2x on the other
